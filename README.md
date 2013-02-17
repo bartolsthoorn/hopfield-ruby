@@ -5,6 +5,10 @@
 
 The patterns can be passed using multi dimensional array of either 0 and 1 or -1 and 1. An artifical neural network will learn the patterns. Now let's move on to an example.
 
+```ruby
+gem 'hopfield'
+```
+
 ## How do I use it?
 ```ruby
 training = Hopfield::Training.new([pattern1, pattern2])
@@ -25,6 +29,9 @@ Neurons propagated: 1776
 Errors: [0]
 ```
 The script also creates black and white pattern images for you.
+
+## Limitations
+If you use patterns larger than 20x20 it'll take a long time to train the network!
 
 ## Credits
 I was introduced to Hopfield networks through the book [Clever Algorithms](www.cleveralgorithms.com), and I've borrowed bits of the implementation shown in the book. Also used the `.associated?` syntax found here: [Brain](https://github.com/brainopia/brain).
