@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Bart Olsthoorn"]
   s.email       = ["bartolsthoorn@gmail.com"]
-  s.homepage    = "http://github.com/bartolsthoorn/ruby-hopfield"
+  s.homepage    = "http://github.com/bartolsthoorn/hopfield-ruby"
   s.summary     = "Ruby implementation of a Hopfield Network"
   s.description = "Hopfield networks can be used for smart pattern recollections. It's recalling patterns by modelling associative memory of a neural network"
  

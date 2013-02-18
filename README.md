@@ -13,6 +13,10 @@ gem 'hopfield'
 ```ruby
 training = Hopfield::Training.new([pattern1, pattern2])
 network = Hopfield::Network.new(training, perturbed_pattern)
+
+# Propagate until match
+network.propagate until network.associated?
+
 network.pattern # the matched pattern
 network.runs # how many propagations it took
 ```
