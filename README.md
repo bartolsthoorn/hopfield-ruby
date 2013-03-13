@@ -1,5 +1,7 @@
 # Hopfield Network in Ruby
 
+**Warning** Do not use this gem for now, it's a bit buggy, and I'm working hard to make it production-ready! Sorry for the inconvenience.
+
 ## What is it?
 [Hopfield Networks](http://en.wikipedia.org/wiki/Hopfield_network) model the way humans recall memories, or more specific, how neurons recall the pattern. This means you first train the network with a set of known patterns and then pass an unknown or perturbed version of the pattern. The neurons will restore the missing information to create an exact match. 
 
