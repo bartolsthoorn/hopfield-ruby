@@ -26,6 +26,7 @@ network.runs # how many propagations it took
 ## TODO
 - Make this a C extension to boost performance
 - Turn the random picking of neurons into pseudo randomness to prevent the same neuron to be propagated over and over again
+- Implement the Storkey learning rule to provide an alternative for the already implemented Hebbian learning rule.
 - Release the examples
 
 
