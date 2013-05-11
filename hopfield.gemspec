@@ -4,7 +4,7 @@ $:.unshift lib unless $:.include?(lib)
  
 Gem::Specification.new do |s|
   s.name        = "hopfield"
-  s.version     = "1.0"
+  s.version     = "1.1"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Bart Olsthoorn"]
   s.email       = ["bartolsthoorn@gmail.com"]

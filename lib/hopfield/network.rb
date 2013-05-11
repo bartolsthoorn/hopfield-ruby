@@ -1,24 +1,27 @@
 module Hopfield
   class Network
-    attr_accessor :neurons, :patterns, :state, :pattern_width, :vector, :last_error, :runs
+    attr_accessor :neurons, :patterns, :weights, :state, :pattern_dimensions, :last_error, :runs
     
     def initialize(training, perturbed_pattern)
       unless training.class.to_s == 'Hopfield::Training'
         raise TypeError, 'Training has to be an instance of Hopfield::Training'
       end
       
-      unless training.patterns.first.size == perturbed_pattern.size
+      unless training.patterns.first.size == perturbed_pattern.flatten.size
         raise SyntaxError, 'Given pattern does not match size of the training patterns'
       end
       
       # Turn 0 into -1
-      perturbed_pattern.map {|value| (value == 0 ? -1 : value) }
+      perturbed_pattern = perturbed_pattern.flatten.map { |value| (value == 0 ? -1 : value) }
       
       self.neurons =  training.neurons
       self.patterns = training.patterns
-      self.pattern_width = training.pattern_width
-      self.vector =   perturbed_pattern.flatten
-      self.neurons.each_with_index { |neuron,i| neuron.output = self.vector[i] }
+      self.weights =  training.weights
+      self.pattern_dimensions = training.pattern_dimensions
+      
+      self.neurons.count.times do |i|
+        self.neurons[i].state = perturbed_pattern[i]
+      end
       
       self.last_error = [1]
       self.runs =       0
@@ -32,26 +35,35 @@ module Hopfield
       return self.state
     end
     
+    def get_weight(i , j)
+      ij = [i, j].sort
+      return self.weights[ij.first][ij.last]
+    end
+    
     def propagate
       # Select random neuron
-      i = rand(self.neurons.size)
-      activation = 0
+      i = rand(self.neurons.count)
+      
+      activation = 0.0
+      
       self.neurons.each_with_index do |other, j|
-        activation += other.weights[i]*other.output if i!=j
+        next if i == j
+        activation += get_weight(i, j)*other.state
       end
+      
       output = transfer(activation)
-      change = output != self.neurons[i].output
-      self.neurons[i].output = output
+      change = output != self.neurons[i].state
+      self.neurons[i].state = output
       
       # Compile state of outputs
-      state = Array.new(self.neurons.size){|i| self.neurons[i].output}
-      
+      state = Array.new(self.neurons.count){ |i| self.neurons[i].state }
+
       # Calculate the current error
       self.last_error = calculate_error(state)
-      
+
       # Convert state to binary and back to a multi dimensional array
       state = to_binary(state)
-      state = state.each_slice(self.pattern_width).to_a
+      state = state.each_slice(self.pattern_dimensions[:width]).to_a
       self.state = state
       
       self.runs += 1
@@ -85,7 +97,7 @@ module Hopfield
     end
     
     def to_binary(vector)
-      return Array.new(vector.size){|i| ((vector[i]==-1) ? 0 : 1)}
+      return Array.new(vector.size){|i| ((vector[i] == -1) ? 0 : 1)}
     end
     
   end

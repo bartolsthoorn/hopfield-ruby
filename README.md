@@ -1,6 +1,6 @@
 # Hopfield Network in Ruby
 
-**Warning** Do not use this gem for now, it's a bit buggy, and I'm working hard to make it production-ready! Sorry for the inconvenience.
+A pure, albeit slow Ruby implementation of a Hopfield Network.
 
 ## What is it?
 [Hopfield Networks](http://en.wikipedia.org/wiki/Hopfield_network) model the way humans recall memories, or more specific, how neurons recall the pattern. This means you first train the network with a set of known patterns and then pass an unknown or perturbed version of the pattern. The neurons will restore the missing information to create an exact match. 
@@ -23,21 +23,11 @@ network.pattern # the matched pattern
 network.runs # how many propagations it took
 ```
 
-## Example with images
-See examples/image.rb for a memory association of Charlie Sheen, with a cat hiding him.
-```
-$ cd examples
-$ ruby image.rb
-Image 1 is now in an array of [20x20]
-Image 2 is now in an array of [20x20]
-Hopfield neurons are trained!
-Neurons propagated: 1776
-Errors: [0]
-```
-The script also creates black and white pattern images for you.
+## TODO
+- Make this a C extension to boost performance
+- Turn the random picking of neurons into pseudo randomness to prevent the same neuron to be propagated over and over again
+- Release the examples
 
-## Limitations
-If you use patterns larger than 20x20 it'll take a long time to train the network!
 
-## Credits
+## Thanks to
 I was introduced to Hopfield networks through the book [Clever Algorithms](www.cleveralgorithms.com), and I've borrowed bits of the implementation shown in the book. Also used the `.associated?` syntax found here: [Brain](https://github.com/brainopia/brain).
