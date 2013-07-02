@@ -1,4 +1,4 @@
-require 'matrix'
+require 'hopfield/hopfield'
 
 require_relative 'hopfield/neuron'
 require_relative 'hopfield/training'

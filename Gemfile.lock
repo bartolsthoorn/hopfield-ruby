@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    hopfield (1.1)
+    hopfield (1.2)
 
 GEM
   remote: https://rubygems.org/

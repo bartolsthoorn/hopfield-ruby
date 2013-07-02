@@ -4,7 +4,7 @@ $:.unshift lib unless $:.include?(lib)
  
 Gem::Specification.new do |s|
   s.name        = "hopfield"
-  s.version     = "1.1"
+  s.version     = "1.2"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Bart Olsthoorn"]
   s.email       = ["bartolsthoorn@gmail.com"]
@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
   s.add_development_dependency "chunky_png"
  
-  s.files        = Dir.glob("lib/**/*") + %w(LICENSE README.md)
+  s.files        = Dir.glob("lib/**/*") + Dir.glob('ext/**/*.{c,h,rb}') + %w(LICENSE README.md)
+  s.extensions = ['ext/hopfield/extconf.rb']
+  
   s.require_path = 'lib'
 end

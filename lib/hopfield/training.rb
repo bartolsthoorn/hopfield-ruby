@@ -5,6 +5,8 @@ module Hopfield
   HEBBIAN_RULE = 1
   STORKEY_RULE = 2
   
+  USE_C_EXTENSION = true
+  
   class Training
     attr_accessor :patterns, :neurons, :weights, :pattern_dimensions,  :rule
     
@@ -48,18 +50,23 @@ module Hopfield
       # Neurons are fully connected; every neuron has a weight value for every other neuron
       case rule
         when Hopfield::HEBBIAN_RULE
-          self.neurons.count.times do |i|
-            for j in ((i+1)...self.neurons.count) do
-              next if i == j
-              weight = 0.0
-              self.patterns.each do |pattern|
-                weight += pattern[i] * pattern[j]
+          if USE_C_EXTENSION
+            self.weights = Hopfield::calculate_weights_hebbian(self.patterns, self.neurons.count)
+          else
+            # Ruby equivalent of the calculate_weights_hebbian C function
+            self.neurons.count.times do |i|
+              for j in ((i+1)...self.neurons.count) do
+                next if i == j
+                weight = 0.0
+                self.patterns.each do |pattern|
+                  weight += pattern[i] * pattern[j]
+                end
+                set_weight(i, j, weight / self.patterns.count)
               end
-              set_weight(i, j, weight / self.patterns.count)
             end
           end
         when Hopfield::STORKEY_RULE
-          
+          # Still has to be implemented in both Ruby and C
         else
           abort 'Unknown learning rule specified, either use Hopfield::STORKEY_RULE or Hopfield::HEBBIAN_RULE'
         end

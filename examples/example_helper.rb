@@ -10,7 +10,3 @@ end
 
 # Enables require 'hopfield/hopfield' in Ruby
 $: << File.dirname(__FILE__) + '/../ext'
-
-# Include Ruby code
-require_relative '../lib/hopfield'
-require 'timeout'
