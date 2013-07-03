@@ -6,16 +6,18 @@ static VALUE hopfield_calculate_weights_hebbian(VALUE self, VALUE patterns, VALU
   Check_Type(patterns, T_ARRAY);
   Check_Type(neurons_count, T_FIXNUM);
   
+  int n_count = FIX2INT(neurons_count);
+  
   VALUE weights;
-  weights = rb_ary_new2(FIX2INT(neurons_count));
-  for(int i = 0; i < FIX2INT(neurons_count)-1; i++) {
-    rb_ary_store(weights, i, rb_ary_new2(FIX2INT(neurons_count)));
+  weights = rb_ary_new2(n_count);
+  for(int i = 0; i < n_count-1; i++) {
+    rb_ary_store(weights, i, rb_ary_new2(n_count));
   }
   
-  int patterns_count = RARRAY_LEN(patterns);
+  int patterns_count = (int) RARRAY_LEN(patterns);
   
-  for(int i = 0; i < FIX2INT(neurons_count); i++) {
-    for(int j = (i+1); j < FIX2INT(neurons_count); j++) {
+  for(int i = 0; i < n_count; i++) {
+    for(int j = (i+1); j < n_count; j++) {
       if (j == i)
         continue;
       
@@ -26,10 +28,10 @@ static VALUE hopfield_calculate_weights_hebbian(VALUE self, VALUE patterns, VALU
       
       weight = weight / patterns_count;
       
-      int weight_i = (i < j) ? i : j;
-      int weight_j = (j > i) ? j : i;
+      int w_i = (i < j) ? i : j;
+      int w_j = (j > i) ? j : i;
       
-      rb_ary_store(rb_ary_entry(weights, weight_i), weight_j, rb_float_new(weight));
+      rb_ary_store(rb_ary_entry(weights, w_i), w_j, rb_float_new(weight));
     }
   }
   

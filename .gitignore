@@ -1,0 +1,8 @@
+Makefile
+*.bundle
+*.o
+Gemfile.lock
+doc/
+.bundle
+log
+coverage
