@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/bartolsthoorn/hopfield-ruby"
   s.summary     = "Ruby implementation of a Hopfield Network"
   s.description = "Hopfield networks can be used for smart pattern recollections. It's recalling patterns by modelling associative memory of a neural network"
+  s.license     = "MIT"
  
   s.add_development_dependency "rspec"
   s.add_development_dependency "chunky_png"

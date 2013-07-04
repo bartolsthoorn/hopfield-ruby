@@ -1,6 +1,6 @@
 # Hopfield Network in Ruby
 
-A pure, albeit slow Ruby implementation of a Hopfield Network.
+A short and simple Ruby implementation of a Hopfield Network. Includes a small C extension to speed up the CPU intensive loops.
 
 ## What is it?
 [Hopfield Networks](http://en.wikipedia.org/wiki/Hopfield_network) model the way humans recall memories, or more specific, how neurons recall the pattern. This means you first train the network with a set of known patterns and then pass an unknown or perturbed version of the pattern. The neurons will restore the missing information to create an exact match. 
