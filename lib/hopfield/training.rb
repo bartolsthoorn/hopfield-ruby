@@ -5,8 +5,6 @@ module Hopfield
   HEBBIAN_RULE = 1
   STORKEY_RULE = 2
   
-  USE_C_EXTENSION = true
-  
   class Training
     attr_accessor :patterns, :neurons, :weights, :pattern_dimensions,  :rule
     
@@ -31,7 +29,7 @@ module Hopfield
       self.patterns = self.patterns.map { |pattern| pattern.map { |value| (value == 0 ? -1 : value) }}
       
       # Create neurons
-      self.neurons = Array.new(self.patterns.first.length) { Neuron.new }
+      self.neurons = Array.new(self.patterns.first.length) { 0.0 }
       
       self.weights = Array.new
       

@@ -8,7 +8,7 @@ describe Hopfield do
     
     @patterns = [pattern1, pattern2, pattern3]
   end
-    
+  
   describe Hopfield::Training do
     before :each do 
       @training_hebbian = Hopfield::Training.new @patterns, Hopfield::HEBBIAN_RULE

@@ -1,6 +1,6 @@
 module Hopfield
   class Network
-    attr_accessor :neurons, :patterns, :weights, :state, :pattern_dimensions, :last_error, :runs
+    attr_accessor :neurons, :patterns, :weights, :state, :pattern_dimensions, :last_error, :runs, :random_pool, :random_pool_index
     
     def initialize(training, perturbed_pattern)
       unless training.class.to_s == 'Hopfield::Training'
@@ -20,8 +20,13 @@ module Hopfield
       self.pattern_dimensions = training.pattern_dimensions
       
       self.neurons.count.times do |i|
-        self.neurons[i].state = perturbed_pattern[i]
+        self.neurons[i] = perturbed_pattern[i]
       end
+      
+      # Create a semi random pool to improve performance
+      # This prevents propagation of the same neuron over and over again
+      self.random_pool =        (0...self.neurons.count).to_a.shuffle
+      self.random_pool_index =  rand(self.neurons.count)
       
       self.last_error = [1]
       self.runs =       0
@@ -42,24 +47,38 @@ module Hopfield
     
     def propagate
       # Select random neuron
-      i = rand(self.neurons.count)
-      
-      activation = 0.0
-      
-      self.neurons.each_with_index do |other, j|
-        next if i == j
-        activation += get_weight(i, j)*other.state
+      if self.random_pool_index == self.random_pool.size - 1
+        self.random_pool_index = 0
+        self.random_pool.shuffle!
       end
       
-      output = transfer(activation)
-      change = output != self.neurons[i].state
-      self.neurons[i].state = output
+      i = self.random_pool[self.random_pool_index]
+      self.random_pool_index += 1
+      
+      if false && USE_C_EXTENSION
+        output = Hopfield::calculate_neuron_state(i, self.neurons, self.weights)
+      else
+        # Ruby equivalent of calculate_neuron_state C function
+        activation = 0.0
+        self.neurons.each_with_index do |other, j|
+          next if i == j
+          activation += get_weight(i, j)*other
+        end
+        output = transfer(activation)
+      end
+      
+      change = output != self.neurons[i]
+      self.neurons[i] = output
       
       # Compile state of outputs
-      state = Array.new(self.neurons.count){ |i| self.neurons[i].state }
+      state = self.neurons
 
       # Calculate the current error
-      self.last_error = calculate_error(state)
+      if USE_C_EXTENSION
+        self.last_error = Hopfield::calculate_state_errors(self.neurons, self.patterns)
+      else
+        self.last_error = calculate_error(state)
+      end
 
       # Convert state to binary and back to a multi dimensional array
       state = to_binary(state)
