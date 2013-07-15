@@ -43,9 +43,23 @@ static VALUE hopfield_transfer_activation(float activation) {
 }
 
 static VALUE hopfield_calculate_neuron_state(VALUE self, VALUE neuron_index, VALUE neurons, VALUE weights) {
-  float activation = 0.0;
+  Check_Type(neuron_index, T_FIXNUM);
+  Check_Type(neurons, T_ARRAY);
+  Check_Type(weights, T_ARRAY);
   
-  // TODO: Write C equivalent of Ruby loop
+  float activation = 0.0;
+  int i = FIX2INT(neuron_index);
+  int neurons_count = (int) RARRAY_LEN(neurons);
+  
+  for(int j = 0; j < neurons_count; j++) {
+    if (j == i)
+      continue;
+    
+    int w_i = (i < j) ? i : j;
+    int w_j = (j > i) ? j : i;
+    
+    activation += NUM2DBL(rb_ary_entry(rb_ary_entry(weights, w_i), w_j)) * NUM2DBL(rb_ary_entry(neurons, j));
+  }
   
   return hopfield_transfer_activation(activation);
 }

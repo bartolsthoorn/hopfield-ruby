@@ -55,7 +55,7 @@ module Hopfield
       i = self.random_pool[self.random_pool_index]
       self.random_pool_index += 1
       
-      if false && USE_C_EXTENSION
+      if USE_C_EXTENSION
         output = Hopfield::calculate_neuron_state(i, self.neurons, self.weights)
       else
         # Ruby equivalent of calculate_neuron_state C function
@@ -75,8 +75,9 @@ module Hopfield
 
       # Calculate the current error
       if USE_C_EXTENSION
-        self.last_error = Hopfield::calculate_state_errors(self.neurons, self.patterns)
+        self.last_error = Hopfield::calculate_state_errors(state, self.patterns)
       else
+        # Ruby equivalent of calcuting the current error
         self.last_error = calculate_error(state)
       end
 
@@ -88,9 +89,9 @@ module Hopfield
       self.runs += 1
       
       return {
-        :did_change => change, 
-        :state => self.state,
-        :error => self.last_error
+        did_change: change, 
+        state: self.state,
+        error: self.last_error
       } 
     end
     
