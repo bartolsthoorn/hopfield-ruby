@@ -14,91 +14,91 @@ module Hopfield
       # Turn 0 into -1
       perturbed_pattern = perturbed_pattern.flatten.map { |value| (value == 0 ? -1 : value) }
       
-      self.neurons =  training.neurons
-      self.patterns = training.patterns
-      self.weights =  training.weights
-      self.pattern_dimensions = training.pattern_dimensions
+      @neurons =  training.neurons
+      @patterns = training.patterns
+      @weights =  training.weights
+      @pattern_dimensions = training.pattern_dimensions
       
-      self.neurons.count.times do |i|
-        self.neurons[i] = perturbed_pattern[i]
+      @neurons.count.times do |i|
+        @neurons[i] = perturbed_pattern[i]
       end
       
       # Create a semi random pool to improve performance
       # This prevents propagation of the same neuron over and over again
-      self.random_pool =        (0...self.neurons.count).to_a.shuffle
-      self.random_pool_index =  rand(self.neurons.count)
+      @random_pool =        (0...@neurons.count).to_a.shuffle
+      @random_pool_index =  rand(@neurons.count)
       
-      self.last_error = [1]
-      self.runs =       0
+      @last_error = [1]
+      @runs =       0
     end
     
     def associated?
-      return self.last_error.include? 0
+      return @last_error.include? 0
     end
     
     def pattern
-      return self.state
+      return @state
     end
     
     def get_weight(i , j)
       ij = [i, j].sort
-      return self.weights[ij.first][ij.last]
+      return @weights[ij.first][ij.last]
     end
     
     def propagate
       # Select random neuron
-      if self.random_pool_index == self.random_pool.size - 1
-        self.random_pool_index = 0
-        self.random_pool.shuffle!
+      if @random_pool_index == @random_pool.size - 1
+        @random_pool_index = 0
+        @random_pool.shuffle!
       end
       
-      i = self.random_pool[self.random_pool_index]
-      self.random_pool_index += 1
+      i = @random_pool[@random_pool_index]
+      @random_pool_index += 1
       
       if USE_C_EXTENSION
-        output = Hopfield::calculate_neuron_state(i, self.neurons, self.weights)
+        output = Hopfield::calculate_neuron_state(i, @neurons, @weights)
       else
         # Ruby equivalent of calculate_neuron_state C function
         activation = 0.0
-        self.neurons.each_with_index do |other, j|
+        @neurons.each_with_index do |other, j|
           next if i == j
           activation += get_weight(i, j)*other
         end
         output = transfer(activation)
       end
       
-      change = output != self.neurons[i]
-      self.neurons[i] = output
+      change = output != @neurons[i]
+      @neurons[i] = output
       
       # Compile state of outputs
-      state = self.neurons
+      state = @neurons
 
       # Calculate the current error
       if USE_C_EXTENSION
-        self.last_error = Hopfield::calculate_state_errors(state, self.patterns)
+        @last_error = Hopfield::calculate_state_errors(state, @patterns)
       else
         # Ruby equivalent of calcuting the current error
-        self.last_error = calculate_error(state)
+        @last_error = calculate_error(state)
       end
 
       # Convert state to binary and back to a multi dimensional array
       state = to_binary(state)
-      state = state.each_slice(self.pattern_dimensions[:width]).to_a
-      self.state = state
+      state = state.each_slice(@pattern_dimensions[:width]).to_a
+      @state = state
       
-      self.runs += 1
+      @runs += 1
       
       return {
         did_change: change, 
-        state: self.state,
-        error: self.last_error
+        state: @state,
+        error: @last_error
       } 
     end
     
     def calculate_error(current_pattern)
       errors = Array.new(0)
       
-      self.patterns.each do |pattern|
+      @patterns.each do |pattern|
         sum = 0
       
         expected = pattern.flatten

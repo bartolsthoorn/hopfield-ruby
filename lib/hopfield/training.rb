@@ -18,20 +18,20 @@ module Hopfield
       # This number is based on the number of inputs of a pattern
       net_size =  patterns.first.map(&:size).inject{|sum,x| sum + x }
       
-      self.pattern_dimensions = Hash.new
-      self.pattern_dimensions[:width] =  patterns.first.first.size
-      self.pattern_dimensions[:height] = patterns.first.size
+      @pattern_dimensions = Hash.new
+      @pattern_dimensions[:width] =  patterns.first.first.size
+      @pattern_dimensions[:height] = patterns.first.size
       
       # Flatten patterns to 1D array
-      self.patterns = patterns.map { |pattern| pattern.flatten }
+      @patterns = patterns.map { |pattern| pattern.flatten }
       
       # Turn 0 into -1
-      self.patterns = self.patterns.map { |pattern| pattern.map { |value| (value == 0 ? -1 : value) }}
+      @patterns = @patterns.map { |pattern| pattern.map { |value| (value == 0 ? -1 : value) }}
       
       # Create neurons
-      self.neurons = Array.new(self.patterns.first.length) { 0.0 }
+      @neurons = Array.new(@patterns.first.length) { 0.0 }
       
-      self.weights = Array.new
+      @weights = Array.new
       
       # Train the neurons
       train(rule)
@@ -40,8 +40,8 @@ module Hopfield
     def set_weight(neuron_index, other_neuron_index, weight)
       # Connections are symmetric, so ij is the same as ji, so store it only once
       ij = [neuron_index, other_neuron_index].sort
-      self.weights[ij.first] = [] if self.weights[ij.first].nil?
-      self.weights[ij.first][ij.last] = weight
+      @weights[ij.first] = [] if @weights[ij.first].nil?
+      @weights[ij.first][ij.last] = weight
     end
     
     def train(rule)
@@ -49,17 +49,17 @@ module Hopfield
       case rule
         when Hopfield::HEBBIAN_RULE
           if USE_C_EXTENSION
-            self.weights = Hopfield::calculate_weights_hebbian(self.patterns, self.neurons.count)
+            @weights = Hopfield::calculate_weights_hebbian(@patterns, @neurons.count)
           else
             # Ruby equivalent of the calculate_weights_hebbian C function
-            self.neurons.count.times do |i|
-              for j in ((i+1)...self.neurons.count) do
+            @neurons.count.times do |i|
+              for j in ((i+1)...@neurons.count) do
                 next if i == j
                 weight = 0.0
-                self.patterns.each do |pattern|
+                @patterns.each do |pattern|
                   weight += pattern[i] * pattern[j]
                 end
-                set_weight(i, j, weight / self.patterns.count)
+                set_weight(i, j, weight / @patterns.count)
               end
             end
           end
